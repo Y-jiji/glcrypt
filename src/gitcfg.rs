@@ -1,15 +1,29 @@
 use std::fs;
-use std::process::Command;
+use std::process::{Command, ExitStatus};
+
+pub fn gitcli(args: &[&str]) -> ExitStatus {
+    let out = Command::new("git")
+        .args(args)
+        .output()
+        .expect("git failed");
+    for b in [&out.stdout, &out.stderr] {
+        let s = String::from_utf8_lossy(b);
+        for ln in s.lines() {
+            eprintln!("[GIT] {ln}");
+        }
+    }
+    out.status
+}
 
 pub fn init() {
     let exe = std::env::current_exe().unwrap();
     let bin = exe.to_str().unwrap();
     let cln = format!("{bin} clean");
     let smg = format!("{bin} smudge");
-    cfg("filter.glcrypt.clean", &cln);
-    cfg("filter.glcrypt.smudge", &smg);
-    cfg("filter.glcrypt.required", "true");
-    cfg("diff.glcrypt.textconv", &smg);
+    gitcli(&["config", "filter.glcrypt.clean", &cln]);
+    gitcli(&["config", "filter.glcrypt.smudge", &smg]);
+    gitcli(&["config", "filter.glcrypt.required", "true"]);
+    gitcli(&["config", "diff.glcrypt.textconv", &smg]);
     let path = ".gitattributes";
     let rules = "* filter=glcrypt diff=glcrypt\n\
                   .git* !filter !diff\n";
@@ -19,15 +33,4 @@ pub fn init() {
         eprintln!(".gitattributes updated");
     }
     eprintln!("filter configured");
-}
-
-fn cfg(k: &str, v: &str) {
-    let st = Command::new("git")
-        .args(["config", k, v])
-        .status()
-        .expect("git failed");
-    if !st.success() {
-        eprintln!("git config {k} failed");
-        std::process::exit(1);
-    }
 }

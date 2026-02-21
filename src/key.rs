@@ -2,6 +2,7 @@ use pbkdf2::pbkdf2_hmac;
 use sha2::Sha256;
 use std::io::{self, Write};
 use std::process::Command;
+use crate::gitcfg::gitcli;
 
 pub fn load() -> Option<[u8; 32]> {
     let out = Command::new("git")
@@ -44,20 +45,12 @@ pub fn keygen() {
         &mut k,
     );
     let hx = hex::encode(k);
-    let st = Command::new("git")
-        .args(["config", "glcrypt.key", &hx])
-        .status()
-        .expect("git config failed");
+    let st = gitcli(&["config", "glcrypt.key", &hx]);
     if !st.success() {
-        eprintln!("git config failed");
         std::process::exit(1);
     }
     eprintln!("key stored");
     crate::gitcfg::init();
-    let _ = Command::new("git")
-        .args(["rm", "--cached", "-rq", "."])
-        .status();
-    let _ = Command::new("git")
-        .args(["reset", "--hard"])
-        .status();
+    gitcli(&["rm", "--cached", "-rq", "."]);
+    gitcli(&["reset", "--hard"]);
 }
