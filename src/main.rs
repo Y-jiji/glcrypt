@@ -4,23 +4,45 @@ mod gitcfg;
 mod key;
 
 fn main() {
-    let cmd = std::env::args().nth(1).unwrap_or_default();
-    match cmd.as_str() {
-        "clean" => {
-            let k = need_key();
-            filter::clean(&k);
-        }
-        "smudge" => {
-            let k = need_key();
-            let arg = std::env::args().nth(2);
-            smudge(&k, arg);
-        }
+    let args: Vec<String> = std::env::args().collect();
+    let (k, cmd, rest) = parse(&args);
+    match cmd {
+        "clean" => filter::clean(&k),
+        "smudge" => smudge(&k, rest),
         "init" => key::keygen(),
         _ => {
-            eprintln!("usage: glcrypt <clean|smudge|init>");
+            eprintln!("usage: glcrypt [--key HEX] <clean|smudge|init>");
             std::process::exit(1);
         }
     }
+}
+
+fn parse(args: &[String]) -> ([u8; 32], &str, Option<String>) {
+    let (hx, off) = match args.get(1).map(|s| s.as_str()) {
+        Some("--key") => (args.get(2), 3),
+        _ => (None, 1),
+    };
+    let cmd = args.get(off).map(|s| s.as_str()).unwrap_or("");
+    let rest = args.get(off + 1).cloned();
+    let k = match hx {
+        Some(h) => hexkey(h),
+        None => need_key(),
+    };
+    (k, cmd, rest)
+}
+
+fn hexkey(h: &str) -> [u8; 32] {
+    let b = hex::decode(h).unwrap_or_else(|_| {
+        eprintln!("bad hex key");
+        std::process::exit(1);
+    });
+    if b.len() != 32 {
+        eprintln!("key must be 32 bytes");
+        std::process::exit(1);
+    }
+    let mut k = [0u8; 32];
+    k.copy_from_slice(&b);
+    k
 }
 
 fn need_key() -> [u8; 32] {
