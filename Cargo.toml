@@ -1,12 +1,13 @@
-[package]
-name = "glcrypt"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-chacha20poly1305 = "0.10"
-hmac = "0.12"
-sha2 = "0.10"
-pbkdf2 = "0.12"
-base64 = "0.22"
-hex = "0.4"
+GLC:4LMCvroSE26ny6bsno+PwcfxWyogawgUc6jVmNUPw1rgBsrLfxk=
+GLC:x/+PZUyW38ebZgekYSDI/LdlCzeQ1eYF5Fu/9ITO7w1TRBYb+/3cc9lQ6aK9
+GLC:QYtqrCTbsbyNsjfZWqJv5m3ybOA0Ocd55Xb6+QpLGzRP9WnYLrCUJf3VjaPmgg==
+GLC:75t4H0sm9yQcYt6t6hHTH3S3KmbPVtL7kWGzXpFry0j3s8inCG/Q8cBF30nk
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
+GLC:+2M9kNinANdioxmZzISBmpB5FiFm4GSU/is0wzqnUAlVas7v2Ij2LZ5zhg==
+GLC:bz6yKUywPziVXijGLZlG1vc7QyRtYhnuiZNJ9H27YKSpb/fyD10vETHDFgNa9QKQTWrXVh3j
+GLC:zd9r94ji+85Jm7IQ2jFVCbbn6vFK3v9Wf8HhCsur9P0SGnz2tf8ivXXq
+GLC:MToGj2rET8Fx+aGeQsyuVQYZJsuMQg+GYql6xqGLJoBydH7ThDjONW/u
+GLC:NVl2378NcCnLuPCcKes09Aip8PRGa/beLuymRjPzfiRkKCiXYrCEgNJjbLc=
+GLC:8MN/SK7hAXdFraKGyRFwKR39UMvX5YIJ7T74s+WZ9a7INLT4EH2QqA2EBmk=
+GLC:sOzCgZpuWRkBsh22eEL1Wr/BDAXZaQ3cEQpkS9wZvOWP/qI/cFWI2A==
+GLC:sKtM/XSwqiBzkmZJV27owhQGEjUMVwWJwuiOKGCfQMI1gggH6SkQYTnu/KRAajtMiZ8mz4dQF5DVsYKxmEeGFnOjtW1f3OHSOQd7wA==

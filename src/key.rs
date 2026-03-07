@@ -1,56 +1,60 @@
-use pbkdf2::pbkdf2_hmac;
-use sha2::Sha256;
-use std::io::{self, Write};
-use std::process::Command;
-use crate::gitcfg::gitcli;
-
-pub fn load() -> Option<[u8; 32]> {
-    let out = Command::new("git")
-        .args(["config", "glcrypt.key"])
-        .output()
-        .ok()?;
-    if !out.status.success() {
-        return None;
-    }
-    let s = String::from_utf8(out.stdout).ok()?;
-    let b = hex::decode(s.trim()).ok()?;
-    if b.len() != 32 {
-        return None;
-    }
-    let mut k = [0u8; 32];
-    k.copy_from_slice(&b);
-    Some(k)
-}
-
-fn prompt(msg: &str) -> String {
-    eprint!("{msg}");
-    io::stderr().flush().unwrap();
-    let mut s = String::new();
-    io::stdin().read_line(&mut s).unwrap();
-    s.trim_end().to_string()
-}
-
-pub fn keygen() {
-    let pwd = prompt("passcode: ");
-    let chk = prompt("confirm: ");
-    if pwd != chk {
-        eprintln!("mismatch");
-        std::process::exit(1);
-    }
-    let mut k = [0u8; 32];
-    pbkdf2_hmac::<Sha256>(
-        pwd.as_bytes(),
-        b"glcrypt",
-        600_000,
-        &mut k,
-    );
-    let hx = hex::encode(k);
-    let st = gitcli(&["config", "glcrypt.key", &hx]);
-    if !st.success() {
-        std::process::exit(1);
-    }
-    eprintln!("key stored");
-    crate::gitcfg::init();
-    gitcli(&["rm", "--cached", "-rq", "."]);
-    gitcli(&["reset", "--hard"]);
-}
+GLC:SWXOifGR3QoSHus/NXsGyAhT2CpTZ2lh2DjuU1d2xEcA3pI6YoWYM7ZyYBLNzn2sT1jAWjA=
+GLC:JdM1t8xYQGTgwnl+WxUebF0tu3qpQcd3+qGbUiXpTFWbUD4m4uiZlcLmNa5OUA==
+GLC:0iC2P6771dL4xAEycyD1x90X48qzBeq/K+8HANTZiLSa9SqdHYknSnmVrdYun3lz4I8RIX8QtOU=
+GLC:qPFqQe1dBLtECoEz+zere0LouDr1IrRchLagdv75BW3y+1OUbIdFGXnV6WLhrD5Wq+DnKEBaVg==
+GLC:RpgOKx+RIwIJd2ghUlAB+hqyZ971c0RvbOELpMnu8rjnYHvyI9WESlhHCysGH5rL7o8H52RQLA==
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
+GLC:zcMZc3BQTG30VlDgUTgH8azWMUTcpjmTHKrHKL2UWmM4AOVX2qPZAX/kppadbVAc3NzIEjuV5RGcaItPLSxaMw==
+GLC:3v2brxX9fIo57qArdKRLO786lEF+m5zncCqgxnMOzapu54/lfHTVoOetWByZlzvvs/KqGvxXC1UrX3BI8no=
+GLC:wibe5KsvXP3JhpCBRZrlByTpNlxGQeCViauh8vQ8qCG69reQyMICGZ+2n6zAClOcAjOn80hxoP70a4ERpqS/ig+3ERDS
+GLC:JS4kME8ukKJOqJypZtW+i2pAY7oXFcTziYQNY2fQHv+xggrWEwGrbm8T1c3LMA==
+GLC:2w/vpU4h+FmyzuQJ7UzHiPyShgLYjOocSkCbTUC7lUmJ0P3pTKadTLDns0k=
+GLC:YU8P3skHFhxMvy6cKVkA1uUZoVeKwFRcOyFhF4XMitANGWB0uy6+BhgKj0MLPvWMgvK4YKG6sGfz20A=
+GLC:AKnB0lrIxsF+80LlV/CUk9WMg9oFKxHGCFPplev4U3g+KD8uOQMz3XFAE1Qbz0yv+w==
+GLC:VWwdF4zMNg3a9LkUmmYZFm0H6DrTf4NeDstaj7Ur+P1tFw==
+GLC:ysjWVeyWnuAvyRSzQv7+UElhzNdswKHAr6kJ/MXPqIym/2XgBgZkdHHsQ10ueEnCbLn5jf19HQycukFGosZP2N7MSLktBdK08cnxOkk=
+GLC:puVkGoAiF5e+36SsVmt5Q8Vh3EP8GSUFm0My8vnipeyjXQix3uLnETfsdWI0CtflAj/zvjKPGjL2j3Q/nOFvO64Tjm3w
+GLC:MAHgd+LKbhRQxxrAV3ykFzBGvrBwDgS6gCdB0dsIW+lXkq35hkFfHIg6T4uKIRafldsA
+GLC:AKnB0lrIxsF+80LlV/CUk9WMg9oFKxHGCFPplev4U3g+KD8uOQMz3XFAE1Qbz0yv+w==
+GLC:VWwdF4zMNg3a9LkUmmYZFm0H6DrTf4NeDstaj7Ur+P1tFw==
+GLC:kRx4A7Cf7bgZU1QlbAKs+zdlOd5qy3ALoFZ2akTMfCjJDY/pggLBq3QHMLNSYQlZo0M7Dg72Fw==
+GLC:SF0c97JHJihX05psI2d1lhBdU0QCRk4QhyBQkqD5OLBOWWqvopBoA9ZeK/TycNExbMqqNajbPg==
+GLC:qFuzo3tIMNqXi4nQ55j4KzE9ZE216ldFtIVX9Nd4UL7J758s5c/i1A==
+GLC:QQnevMRW9TmFECD1VJMsvRyQ5BDeTNUFlzYYwcCb
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
+GLC:1WOtCvcxJtozUpj9r/wJDJTqrl7ZfdI7nx+TxyubgprIolCAQ+jhvBObeMhyR4SVCuRyXhT2j4RAaOmjCA==
+GLC:5wSvtYDqP5vDEfe9zGzUdLPWJOGY2sZhSrr8oFk2LKFOWt5hiJyL7DD6piiDZ12sZU8=
+GLC:EQqrdVeTq/fD0hEeUFsD4zS0AsoOm7G+76JHwWZgG4wciAxGz+DIGzZlzSvIXJ6CNLDOYZ8EVZQAYM21Ifma
+GLC:9FoouzhbJjTm3e9FHd2rklp8lkOIc2/ovV7Tgq1M1lXCRgzHFXok2CQq2pfTK5dR4E6wZ7yAsZgeNMk=
+GLC:g/8X+JCSq2SMGV32LN1jFitjvxZ39JGJ4GnuND1IDpblj3AQJymesHjA9VxE9JZaATd2twaw8Xwsutq6ypZP6nvfS5/ikXeV
+GLC:l0mkBjCt0+ZOJ66iKRfZRZtKF5jIQP3rlDoRI5xwdRR4vvOZuDPpU5wZZuwy8bi1lfYkKWcn6KFl
+GLC:QQnevMRW9TmFECD1VJMsvRyQ5BDeTNUFlzYYwcCb
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
+GLC:Cl/8lBnF+kUcA6IHIhnRu5e+XYuArYieY4c0E13Apqx2KTGZ9vGOkLVZoSeq7hJGtBO573gmUyEKQ+0q2KDoTAefNA==
+GLC:kRx4A7Cf7bgZU1QlbAKs+zdlOd5qy3ALoFZ2akTMfCjJDY/pggLBq3QHMLNSYQlZo0M7Dg72Fw==
+GLC:jJJDWWfs5y2894URwQR7Rp/XO+aAjeibWw9DsQAORY+jUELxwsXfJ05WEhZFwn1MaEBPEJat4g==
+GLC:3hVviiggJq86LJZa9yHjoICzr5i57Ni+dPoShcBBij9kBGGzA0J8iI28P3BdTxMHv9fpuw==
+GLC:ah1nbP25ezv3Em0XRWXwQeZY9KFXDIV6M5HeJIEaszino8VY+IxeH9zWf+BvApLr
+GLC:2PUZjc6lG+3M3f44XFIZiX2qqHKDkO321hJX4J4YNehnr3I+eU7DNWnus9ik
+GLC:bNoUZqopxzGDXcEzJ0Jqx5DWeiTjsjKvL+65sPxrC9s4UPj/zPR7V9l27xA=
+GLC:f7W/xb/IB+7IK8WYoFM4w0ORNuPrBHAGeXdUjLLg1bE8qJI=
+GLC:LVMAGlR48TmXevcE8h/UD2QrTOEvw+Kp2nvX2Fb51knW5A==
+GLC:QQnevMRW9TmFECD1VJMsvRyQ5BDeTNUFlzYYwcCb
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
+GLC:XKo56zm/LyP44gxLz1oph/Ud+vuvlKR9dc91UmpBHSUr9FmAM8yvMiTnODPaVw==
+GLC:+yFPqkvKmpNxAf6a+TkamPOBLCSTmkaT2FXe5jFCD7WhYPQQKG6ZD0ISWoKfcCcQcvbHsCyrpZ9XrpGcHBxMHw==
+GLC:YTR+SXnJ7sVuSL+DApUNTUi3VgOmbkp/ExCy+x7v9cWrn2AiMxS+fshb/PAFnzWl9163dXBxaa7SzbVam/O2
+GLC:MQKUUxOKGhUF1aOeCnWqV9occ3PGuwoVneR+hNov+GlGS7T26ii4ADPGeQKSVAdo
+GLC:cZTa8FHSXvFhpQ7lkC8lqeVt6DKpZEjw94zvFDqIxUHObG22LllWGeRpddcMu8cQVQ2//rCVMOd15qU=
+GLC:3qLxfmczSNYrBYgpQHX+sdu3jvCqkTics+syvD4+0106LxfMo9IKicCRkOe2POoIh0lS0/d6LUrD5MQ=
+GLC:VWwdF4zMNg3a9LkUmmYZFm0H6DrTf4NeDstaj7Ur+P1tFw==
+GLC:yGvHBUfJ+1eX/XxlURk9yZ8TsGrhrxsK3BCK1VpOLcXuMh4Pa7WNUwEKXYiUpxWtPZktr8sUrfrmcWEJP3DENeoHzD0=
+GLC:kHspHKfRZckC4Xtnq/iTT88OgLOgnnldKzSvchWapmxpaTWm2Ojx+HKIURV0BTT1ArA/Y7O4N66BjhPtkUrf3WgjwRiMCCVyj6wrnYl7ULn/aQ==
+GLC:kX+Mqm+HTSKcaAza8HKDxyh5thtGpSragW1859zx1LLwfGUDj1NtRVhXoFpPj4TGU6lT
+GLC:3qLxfmczSNYrBYgpQHX+sdu3jvCqkTics+syvD4+0106LxfMo9IKicCRkOe2POoIh0lS0/d6LUrD5MQ=
+GLC:VWwdF4zMNg3a9LkUmmYZFm0H6DrTf4NeDstaj7Ur+P1tFw==
+GLC:0qWw6A9loNbtkMJ4p1HUBaOR0vmG6+u3tmbyJURn2/pdVMVXS6BLwy01u3/4ixC3l3v6kBfTxAJO
+GLC:PaxjcApZRpfFA0lU+eAusp+73HHC26PGyyOULIl6W9Jll7p02zFUCAE3sj3vOWGAVHyVG3hLWA==
+GLC:lOY6GnyY2fkTaZuMb0pXo1NKRWCFaLrm/aJv4Wu6V1Rjp2FKVP+G0rQt9iV2AKJLVdjXPNq+gmTjFod3Tnhr7CtnIICypxqxYg==
+GLC:pCxeW6Y1z1yOBqf1Cww6paP+WdHSo/qlkVokBIIYISlI6RiMEwiEm/26pKohqLBYI1TwPYR2XupEzvtJSd0=
+GLC:QQnevMRW9TmFECD1VJMsvRyQ5BDeTNUFlzYYwcCb

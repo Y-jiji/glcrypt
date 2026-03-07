@@ -1,69 +1,46 @@
-mod crypt;
-mod filter;
-mod gitcfg;
-mod key;
-
-fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    let (k, cmd, rest) = parse(&args);
-    match cmd {
-        "clean" => filter::clean(&k),
-        "smudge" => smudge(&k, rest),
-        "init" => key::keygen(),
-        _ => {
-            eprintln!("usage: glcrypt [--key HEX] <clean|smudge|init>");
-            std::process::exit(1);
-        }
-    }
-}
-
-fn parse(args: &[String]) -> ([u8; 32], &str, Option<String>) {
-    let (hx, off) = match args.get(1).map(|s| s.as_str()) {
-        Some("--key") => (args.get(2), 3),
-        _ => (None, 1),
-    };
-    let cmd = args.get(off).map(|s| s.as_str()).unwrap_or("");
-    let rest = args.get(off + 1).cloned();
-    let k = match hx {
-        Some(h) => hexkey(h),
-        None => need_key(),
-    };
-    (k, cmd, rest)
-}
-
-fn hexkey(h: &str) -> [u8; 32] {
-    let b = hex::decode(h).unwrap_or_else(|_| {
-        eprintln!("bad hex key");
-        std::process::exit(1);
-    });
-    if b.len() != 32 {
-        eprintln!("key must be 32 bytes");
-        std::process::exit(1);
-    }
-    let mut k = [0u8; 32];
-    k.copy_from_slice(&b);
-    k
-}
-
-fn need_key() -> [u8; 32] {
-    match key::load() {
-        Some(k) => k,
-        None => {
-            eprintln!("no key; run glcrypt init");
-            std::process::exit(1);
-        }
-    }
-}
-
-fn smudge(k: &[u8; 32], path: Option<String>) {
-    match path {
-        Some(p) => {
-            let mut f = std::fs::File::open(&p).unwrap();
-            filter::smudge(k, &mut f);
-        }
-        None => {
-            let sin = std::io::stdin();
-            filter::smudge(k, &mut sin.lock());
-        }
-    }
-}
+GLC:3H1UMcKgK9QwPGVwx7F5GD2wjEGLN2UlhAKE5gAoNcmrBwvrQ5Gg
+GLC:TIgx34DrtA1KIVrcO6HUJnzCUWxLPpoUv9cjTClmxc8ue4aGIO0+6w==
+GLC:9nq29nWYn2TvTXBshts/vXDEUsPIHbhAmqShit8WQWWnGVK55BBcbQ==
+GLC:qNeSPcyximXIN0VVTNDUcQa+aqOtQEy2/Dw71gHk2TXi8KJRNA==
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
+GLC:Ge+L0ccbboUKdzig7sdFrIiwWSsrpqfDQl9TnandxvS5/dj/bCPwuT01tFVuvoDuWFV5+IZSrbaBLRnf
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
+GLC:OZh7tU26xZLymxvu0w4teW5rkcy5undyfznlSisClgaKqERtn/QzAPYcunbfRczcaKySP0ysukBk
+GLC:t2PYePwYYV4+16aqjqUxzQGfEVuSN2QX/lzKTRrHltV/gMX2C0wCnh/YOradAw==
+GLC:sxVc+HMrdnh9FRrysr+aRelVAyHfRelQZK2MI+M86iOwyAv3ASxOsRo=
+GLC:hJsCaBpP5zcOpeM/O+h0J/BN9CpQPhEjE4dZZdL+kbZbOjRMXE8wmyQ20Wup
+GLC:NqJbMi/NggDZms52PL0cR1YI5VDqlVUo6ieRHblRQGK2e/5SD84AjyhzSjwHB7E4Vaf7/6w=
+GLC:SDa65DGWNINIf2z0QvQMnRbsH5d6Oo3Ge5SBZP1PFS6l3/QaEt+OP2SEbZM4UvcoSLQwhJ0BIA==
+GLC:L17/lMfm5wcj8hnTfCJbrfY5Dv8aaOpzLnSUP92i3rSXVHS2Wcd8n/BU
+GLC:QQnevMRW9TmFECD1VJMsvRyQ5BDeTNUFlzYYwcCb
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
+GLC:OZh7tU26xZLymxvu0w4teW5rkcy5undyfznlSisClgaKqERtn/QzAPYcunbfRczcaKySP0ysukBk
+GLC:FCu/A5/TcRia3cXKjtps/PTuDE0MXKLd082EeNuK+Z9WrXeCc0clN1T0iJqJLpCraZ0=
+GLC:6s2qlvpFe73EeB7+mE3BCWfCYArjqb2nDs7ggOJXwTfcygPz8psV
+GLC:xVUMOosZAuljb1ud2465pa0aCtIMH38rRR1pyNt3UbOFL8YHI3g=
+GLC:3J06py9H9mh2/IzjzMqpMR51trcRRTcBtFUb41pXBouIjCZ7cD93
+GLC:UMpIA9bUVjeJohuXpbgE5hfLTvwyiV3YWercZ0jVZAchBIlDsZzPzg==
+GLC:QQnevMRW9TmFECD1VJMsvRyQ5BDeTNUFlzYYwcCb
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
+GLC:Wfl2RMNzgihOFK84OV3sPPy/G39fAtVp3Y1z60mDhkKf3gY5ss2q7g==
+GLC:feSvCcXzJFNVFPXOl2JNQt1iLStus+D+wx/idiip9Ke8yhIDu159GtQpucxmqVUP8xTx7yVo0wk=
+GLC:Lq6kBZlLLYL3pWf0EjUf82g7ZixUrOkub2g+fIEhdulCvzt85Q0c7iY8ZBjG9PxR
+GLC:SplBo8Heyu2KCzaLkiJrV+jvvuFItGbLTXBD6egCfiUDfadO3yFCpi13oB1jSGHAeZU7nQ4SgMqNZdY9c1dELw==
+GLC:tgercE90iciXZeTFjfhGJ088Ig0HWEirom6saIkBSRGKxA4po6uCi6QI5+y+awLuLiaRkCtP2Dg/HM5vAsYZDVhjIs1oo44se0Mu1m+UrxSEPyg=
+GLC:axkzOFVy07pQqATIfb8zUGWL0Iw2m0fdiwtYT4pASZCjcjgexmqIeZYeU/9MiNxSMqsSXM0=
+GLC:RJj/Ngxtc5i/1D1wJB0QjKXx5AIJyRnl+4H/HE1EAsNme3+7tJ0Xm0p8fEjFP0TS5XKMiJaEbFkBXiygj4bDyiPHdKE=
+GLC:tqzGcjPkvTMJSRz7EoqEdApEOY+nGktEphRVGgoI/Etv1vxM/4UmKYvBctan3zUZkTlJpa7IThRqHcKRpssR0uTWek6yjFKLZOTQY1/0iQO9cCkoP7ORHaO+VQ==
+GLC:5amDuSqaF6eTYveDmEenr3SpNxEj1yCqJZtxFjoFDNJCUqTSqDE=
+GLC:VWwdF4zMNg3a9LkUmmYZFm0H6DrTf4NeDstaj7Ur+P1tFw==
+GLC:QQnevMRW9TmFECD1VJMsvRyQ5BDeTNUFlzYYwcCb
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
+GLC:+Hq+3QrzgCQj7KT7ByTgOb4Dtu24OVOhTyaH/5LTaBGB8vz+KChwRqHDuWKb7+h1Z1Ggivks1F4R0+v2TApF6g10LwvcR/XMgw==
+GLC:lyE39mD1uKwQ5ojQxqi15JLgyC9soty96NG7fyNRKEFa1kdRZP+qdFlTnXM=
+GLC:ui2HsoaMdDpYzjqzzXdQRhripmB3CJ2Kv13ELW8xNu3LgQmIAXC007NmsRvTCodIMS0XlD36Hqs+68BzXUUC9g==
+GLC:rWS5gk8+0WhBVTsISJ+A5Y07cszUmvm7yeTpHeMj0umZ648krrC6tTWVacOXL7M8MoyUTMT5anSH5ejdv8YfnpAM0E7gYb5XBkqw2w==
+GLC:YVlF/AuvQ160uWrgdWkwbDrGB/8LU+lqQg8t5XgjOLE1yqiUWNGOBdQljZ7XCpky1EdVB164k8F0MD5w6Oa7mpO+zojmMtdESPlPWgmTzQ==
+GLC:yZI9yoIJSi5hzKPeE+Ng16+2Wt9G7t9yMXymVa12Jtf0rhj/f4K8iqk2PZQ6RjjSoFtr9JIr0tjCiQDz7dlL
+GLC:6rjSTqcIUvNdWoeCHfcHImcrVFLs6bqRMfbq00W3X80hJMmWl5ZzKg==
+GLC:VWwdF4zMNg3a9LkUmmYZFm0H6DrTf4NeDstaj7Ur+P1tFw==
+GLC:QQnevMRW9TmFECD1VJMsvRyQ5BDeTNUFlzYYwcCb
+GLC:EETXTSPZOMDwLcWO7Oelkhm8ZuwomjQJ04UkQ7g=
