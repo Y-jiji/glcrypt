@@ -1,0 +1,13 @@
+[package]
+name = "glcrypt"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+base64 = "0.22"
+chacha20poly1305 = "0.10"
+hmac = "0.12"
+sha2 = "0.10"
+pbkdf2 = "0.12"
+hex = "0.4"
